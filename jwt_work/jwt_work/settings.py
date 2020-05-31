@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'auth_app'
+    'djoser',
+    'corsheaders',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
+
 ]
 
 ROOT_URLCONF = 'jwt_work.urls'
@@ -122,15 +128,21 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
-    # フィルタの追加
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
-
-    # JWT認証の追加
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
-    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_jwt.authentication.JSONWebTokenAuthentication',),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        #Simple JWTの読み込み
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
+    ],
 }
 
-JWT_AUTH = {
-    # トークンの期限を無効に設定
-    'JWT_VERIFY_EXPIRATION': False,
+
+#Simple JWTの設定
+SIMPLE_JWT = {
+    #トークンをJWTに設定
+    'AUTH_HEADER_TYPES': ('JWT',),
+    #トークンの持続時間の設定
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60)
 }
+
+# CORSの設定
+# すべて許可
+CORS_ORIGIN_ALLOW_ALL = True
